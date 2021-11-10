@@ -1,0 +1,36 @@
+version: "3.5"
+
+services:
+  apache:
+    build:
+      context: ./configs/apache2/php
+    ports:
+      - 80:80
+    container_name: apache
+    volumes:
+      - ./www:/var/www/html
+      - ./configs/apache2/ports.conf:/etc/apache2/ports.conf
+      - ./configs/apache2/php.ini:/usr/local/etc/php/conf.d/php.ini
+      - ./configs/apache2/sites-available:/etc/apache2/sites-available
+      - ./logs/apache2:/var/log/apache2
+
+  mariadb:
+    image: mariadb:10.5
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bitrix
+      MYSQL_USER: bitrix
+      MYSQL_PASSWORD: bitrix
+    volumes:
+    - ./databases/mariadb:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    environment:
+      PMA_HOST: mariadb
+      PMA_USER: bitrix
+      PMA_PASSWORD: bitrix
+    ports:
+      - 8080:8080
